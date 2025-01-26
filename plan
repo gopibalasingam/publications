@@ -1,0 +1,257 @@
+──────────────────────────────────────────────────────── 
+
+CASE MANAGEMENT PLATFORM   
+
+──────────────────────────────────────────────────────── 
+
+ 
+
+1.1 Environments and Identity Management   
+
+   • Provision Microsoft Dataverse and Power Platform environments.   
+
+   • Set up Azure Active Directory (AAD) tenant and configure Role‐Based Access Control (RBAC) for:   
+
+        – Operations Users   
+
+        – Citizen Developers   
+
+        – Platform Governance Team   
+
+        – QC and Audit Users (Power BI viewers, etc.)   
+
+   • Configure environment(s) for development, staging, and production (including CI/CD pipelines for Power Apps and Power Automate).   
+
+ 
+
+1.2 Data Model Definition in Microsoft Dataverse   
+
+   • Identify case entity fields, relationships, and metadata requirements (e.g., status, priority, assigned user, etc.).   
+
+   • Set up additional reference data entities (business units, products, statuses, workflow states).   
+
+   • Define any custom tables needed for transaction logs, error/exception tracking, QA outcomes, etc.   
+
+ 
+
+1.3 Power App for Case Management   
+
+   • Design the user interface and user flows for creating, viewing, and managing cases.   
+
+   • Integrate Azure Active Directory roles to control access to sensitive functionalities (e.g., escalation, approvals).   
+
+   • Implement in‐app features such as:   
+
+        – Case creation (initiated either by user or automatically via Event Hub ingestion).   
+
+        – Assignment, forwarding, or escalation workflows.   
+
+        – Integration with IDP for document–case linking.   
+
+ 
+
+1.4 Event Hub – Event‐Driven Data Ingestion   
+
+   • Create an Event Hub namespace to receive inbound events from upstream systems, emails, or scanned documents.   
+
+   • Develop a listener (possibly a Function App or Power Automate connector) that, when triggered, creates a case record in Dataverse.   
+
+   • Ensure messages follow a consistent schema so that relevant metadata (document type, ingestion source, etc.) is captured.   
+
+ 
+
+1.5 Workflow Automation (Power Automate)   
+
+   • Build flows to handle case lifecycle events (on create, on update, on close).   
+
+   • Implement triggered actions, such as:   
+
+        – Initiating IDP processing (when a new document is ingested).   
+
+        – Routing cases to the Quality Assurance stage.   
+
+        – Logging and notifying teams of transaction or processing exceptions.   
+
+ 
+
+1.6 Quality Assurance and Business Rule Validation   
+
+   • Leverage Azure Data Factory to pull extracted data from IDP (stored in Data Lake) and verify it against source systems.   
+
+   • Configure a Power Automate flow or Azure Function to handle the logic for:   
+
+        – Checking extracted fields for completeness/accuracy.   
+
+        – Flagging anomalies or mismatches against business rules.   
+
+   • Surface these QA outcomes back into the case record in Dataverse to guide subsequent approvals, re‐work, or escalation.   
+
+ 
+
+1.7 Reporting and Analytics   
+
+   • Build Power BI dashboards that read from the Dataverse tables and Data Lake Storage:   
+
+        – Case aging reports, throughput, and SLA performance.   
+
+        – Exception and re‐work trends for QC and Audit teams.   
+
+   • Ensure the dashboards are shared with the correct AD groups.   
+
+   • Optionally embed or link these dashboards into the main Power App.   
+
+ 
+
+1.8 Exception Handling in the Case Management Platform   
+
+   • Provide a mechanism in the Power App to view transaction processing exceptions (logged in Dataverse).   
+
+   • Link the IDP/extraction exceptions with the “Case Exception” entity or table for consolidated tracking.   
+
+   • Notify operations or compliance teams when a critical exception is logged so they can respond.   
+
+ 
+
+──────────────────────────────────────────────────────── 
+
+INTELLIGENT DOCUMENT PROCESSING (IDP)   
+
+──────────────────────────────────────────────────────── 
+
+ 
+
+2.1 Document Repository & Data Persistence   
+
+   • Use Azure Blob Storage or ADLS (Azure Data Lake Storage) to store incoming documents.   
+
+   • Define folder structure or naming conventions for inbound vs. processed vs. archived.   
+
+   • Ensure metadata (timestamp, filename, classification) is captured for each document.   
+
+ 
+
+2.2 Data Extraction and Classification (OpenAI GPT‐4)   
+
+   • Train or configure GPT‐4 prompts to extract key data fields from documents (invoice numbers, dates, recipients, etc.).   
+
+   • Implement classification logic to distinguish between document types.   
+
+   • Package these GPT operations behind an Azure Function or a custom connector that Power Automate can call.   
+
+ 
+
+2.3 IDP Workflow Orchestration (Power Automate)   
+
+   • Build a “Pre‐Extraction” flow to:   
+
+        – Pick up newly arrived documents from Blob/ADLS.   
+
+        – Classify documents (ensure correct model or prompt template).   
+
+        – Call the extraction step.   
+
+   • Build a “Post‐Extraction” flow to:   
+
+        – Evaluate extracted data for completeness and confidence levels.   
+
+        – Persist results back to Dataverse or ADLS as desired (step 8 in the diagram).   
+
+        – Trigger quality rules or raise exceptions if data is missing or does not meet thresholds.   
+
+ 
+
+2.4 Qualification and Data Validation Steps   
+
+   • Implement business logic that checks whether a document is “qualified” for further processing (correct doc type, no errors, etc.).   
+
+   • If the document qualifies, store the “extracted key‐value pairs” in Dataverse.   
+
+   • If errors are detected, log an IDP processing exception (step 9).   
+
+ 
+
+2.5 IDP Exception Management Power App   
+
+   • Create a Power App dedicated to reviewing and resolving document‐extraction failures.   
+
+   • Provide a UI for manual correction or reprocessing of documents.   
+
+   • Integrate with the main Case Management solution so that “document exceptions” also appear in the relevant case record.   
+
+ 
+
+2.6 Operational and Performance Reporting (IDP)   
+
+   • Use Power BI to build IDP‐specific performance dashboards (step 10 in the diagram).   
+
+   • Track extraction accuracy, error rates, and average processing times.   
+
+   • Deliver this reporting to data governance teams so they can evaluate IDP performance.   
+
+ 
+
+2.7 Security and Logging   
+
+   • Integrate IDP logs (success/failure, GPT prompt usage, classification results) into our centralized Security Logging/Monitoring solution (e.g., Sentinel SIEM).   
+
+   • Ensure auditing in place for any personally identifiable information (PII).   
+
+ 
+
+──────────────────────────────────────────────────────── 
+
+FOUNDATION 
+
+──────────────────────────────────────────────────────── 
+
+ 
+
+3.1 Release Management and CI/CD   
+
+   • Establish an ALM pipeline (not sure if this what ETS will do) for Power Apps and Power Automate flows (e.g., using Azure DevOps or GitHub Actions).   
+
+   • Automate deployment of Dataverse solutions, custom tables, environment variables, etc.   
+
+ 
+
+3.2 Scalability and Resilience   
+
+   • Implement best practices on the Event Hub to handle peak loads (partitioning, throughput units).   
+
+   • Ensure the downstream IDP Azure Functions have sufficient scaling policies.   
+
+   • Configure Power Platform environment to handle high concurrency if large numbers of case managers or documents are expected.   
+
+   • VNET network access between O365 Power Platform and Azure Subscriptions. 
+
+ 
+
+3.3 Security and Compliance   
+
+   • Integrate with SIEM (Sentinel) for real‐time monitoring of events, logs, anomalies.   
+
+   • Set up and tune alerts in Azure Monitor/New Relic for infrastructure metrics (CPU, memory, function invocation failures).   
+
+   • Confirm that the IDP solution (including GPT‐4 calls) does not unintentionally store sensitive data in logs or prompt history.   
+
+ 
+
+3.4 Testing and Quality Assurance   
+
+   • Unit Tests: Validate each Power Automate flow, especially error‐handling branches.   
+
+   • Integration Tests: Verify end‐to‐end flow from document upload → IDP extraction → case creation → STP Hub.   
+
+   • Performance Tests: Test Event Hub consumption at expected document arrival rates.   
+
+   • Security Tests: Penetration testing on the Power App and any custom connectors or Azure Functions.   
+
+ 
+
+3.5 Production Rollout Strategy   
+
+   • Pilot the solution with a small set of power users or business units.   
+
+   • Monitor Key Performance Indicators and refine the extraction prompts, classification thresholds, and business rule checks.   
+
+   • Conduct training sessions for the Operations and QC/Audit teams on the new Power Apps.   

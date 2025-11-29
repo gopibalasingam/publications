@@ -1,0 +1,13 @@
+Robotics Club Restructuring – Summary
+1. Guild-Based Learning & Leadership Pipeline
+ We’re reorganizing subteams (CAD, Mechanical, Programming, Electrical, Strategy, etc.) into a guild model. Execs identify strong members early and give them “micro-leadership” roles running small groups or tasks. This builds a clear leadership pipeline, improves training, and creates a sense of belonging. It also gives us more reliable data when choosing future leads instead of selecting blindly through intuition.
+2. Data-Driven Development Using LLMs
+ All execs will contribute qualitative evaluations to one shared spreadsheet Ex. (work ethic, initiative, teamwork, technical skill). Using a preset rubric, we will run this data through an LLM to generate role-fit suggestions, leadership potential ratings, and personalized development notes. This makes decisions more objective, consistent, and transparent while accelerating member growth. The key point is to tune and prompt the LLM with human guidance to make the LLM as effective as possible.
+3. Increasing Pride, Ownership, and Member Retention
+ Workshops and meetings will be designed so members can produce visible outputs (mini-projects, tasks, presentations) that they can be proud of. We will highlight their work publicly to reinforce motivation. The goal is for every member to feel that their contributions matter, improving long-term engagement and retention.
+4. Visual & Standardized Coding Education
+ We will create a visual-first coding curriculum using diagrams, flowcharts, and structured examples. LLMs will help rewrite example code to meet our quality standards (readability, efficiency, organization). This ensures that new programmers understand the fundamentals, and that our team’s coding style is consistent, digestible, and easier to teach—especially on local machines without cloud tools. We will provide a structured example through feeding our GitHub repository through an LLM and, with our guidance, restructure the code for general members to understand what is happening, rather than just blindly copying and using a bunch of lambda functions.
+Outcome
+ This restructuring builds a stronger leadership pipeline, makes decisions data-driven instead of intuition, boosts member motivation, and raises our technical standards across all subteams. Through our implementation of LLMs and simple structures with the “guild format,” it will be able to build a sustainable and optimal team for the years ahead. This will at minimum keep our team at the same level, so that we can have a platform to take greater leaps in competition.
+
+
